@@ -1,0 +1,55 @@
+index.html
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saçma Resim Üretici</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 2rem; background: #f0f0f0; }
+    button { padding: 1rem 2rem; font-size: 1.2rem; background: #4caf50; color: white; border: none; border-radius: 8px; cursor: pointer; }
+    img { max-width: 100%; margin-top: 1rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    .prompt { font-style: italic; margin-top: 1rem; color: #333; }
+  </style>
+</head>
+<body>
+  <h1>Saçma Resim Üretici</h1>
+  <button onclick="generateImage()">Yeni Saçmalık Yarat!</button>
+  <div class="prompt" id="prompt"></div>
+  <img id="image" src="" alt="" style="display:none;"/>
+
+  <script>
+    const prompts = [
+      "Goril kafalı, uzayda koşan pembe fil",
+      "Kravatlı brokoli, toplantıda kahve içiyor",
+      "Disko topuyla savaşan dondurma kamyonu",
+      "Timsah gibi giyinmiş bir çaydanlık, zıplıyor",
+      "Balerin fare, bulutların üzerinde pizza doğuruyor"
+    ];
+
+    async function generateImage() {
+      const prompt = prompts[Math.floor(Math.random() * prompts.length)];
+      document.getElementById('prompt').innerText = `Prompt: "${prompt}"`;
+
+      const response = await fetch("https://api.openai.com/v1/images/generations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${OPENAI_API_KEY}` // <-- Bu satır çalışmaz çünkü tarayıcıda KEY gizlenemez
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          n: 1,
+          size: "512x512"
+        })
+      });
+
+      const data = await response.json();
+      const imageUrl = data.data[0].url;
+      const imageElement = document.getElementById('image');
+      imageElement.src = imageUrl;
+      imageElement.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
